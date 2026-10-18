@@ -1,4 +1,4 @@
-# Lefthook configuration for Flutter/Dart and Shell/Markdown linting.
+# Lefthook configuration for Flutter/Dart and Shell linting.
 # Refer to https://github.com/evilmartians/lefthook/blob/master/docs/configuration.md
 
 pre-commit:
