@@ -64,7 +64,6 @@ dependencies:
   alphabet_list_view: ^1.2.0
   timelines_plus: ^2.0.1
   page_transition: ^2.2.2
-  awesome_dialog: ^3.3.0
   upgrader: ^13.7.0
   flutter_rating_bar: ^4.0.1
 
