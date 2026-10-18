@@ -3,9 +3,8 @@ import java.io.FileInputStream
 
 plugins {
     id("com.android.application")
-    // rive_native 仍应用 KGP，AGP 9 的 built-in Kotlin 与其冲突，暂走旧路径
-    id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
+    // Kotlin 由 AGP 9 的 built-in Kotlin 提供，不再应用 kotlin-android
+    // The Flutter Gradle Plugin must be applied after the Android Gradle plugin.
     id("dev.flutter.flutter-gradle-plugin")
     id("com.google.gms.google-services")
 }
