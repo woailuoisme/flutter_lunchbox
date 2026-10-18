@@ -1,0 +1,20 @@
+{
+  "title": "推廣返利",
+  "totalEarnings": "總收益",
+  "withdraw": "提現",
+  "howItWorks": "怎麼運行",
+  "step1": "邀請好友",
+  "step2": "好友加入",
+  "step3": "獲得獎勵",
+  "recentActivity": "最近動態",
+  "joined": "加入",
+  "earned": "獲得 ¥${amount} 獎勵",
+  "inviteCode": "邀請碼",
+  "copyCode": "複製",
+  "codeCopied": "邀請碼已複製",
+  "inviteFriends": "邀請好友",
+  "noRecords": "暫無邀請記錄",
+  "loadFailed": "加載失敗，請稍後重試",
+  "withdrawSuccess": "提現申請已提交",
+  "shareTitle": "我在 Lunchbox 等你！使用我的邀請碼 ${code} 註冊，雙方均可獲得獎勵！"
+}

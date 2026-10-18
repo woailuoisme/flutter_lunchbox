@@ -1,0 +1,27 @@
+{
+  "title": "Coupon",
+  "tabs": {
+    "available": "Available",
+    "received": "Received",
+    "expired": "Expired",
+    "canUse": "To Use",
+    "cannotUse": "Unavailable"
+  },
+  "unit": "$",
+  "discountUnit": "% off",
+  "condition": "Coupon\nOver ${amount}",
+  "conditionThreshold": "Over ${amount}",
+  "conditionNoThreshold": "Coupon\nNo threshold",
+  "noThreshold": "No threshold",
+  "validForever": "Valid Forever",
+  "btnReceive": "Receive",
+  "btnReceived": "Received",
+  "btnUse": "Use",
+  "btnExpired": "Expired",
+  "discount": "$ ${amount} Coupon",
+  "discountOff": "$ ${amount} Off",
+  "noCoupons": "No coupons available",
+  "expiryPrefix": "Expires at: ",
+  "statusAvailable": "Available",
+  "statusUnavailable": "Unavailable"
+}

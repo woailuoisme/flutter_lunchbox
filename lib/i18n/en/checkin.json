@@ -1,0 +1,29 @@
+{
+  "title": "Daily Check-in",
+  "streakDays": "Streak Days",
+  "mysteryReward": "Mystery Reward",
+  "mysteryRewardHint": "Check in continuously to unlock mystery reward",
+  "pendingCheckin": "Pending",
+  "doCheckin": "Check In Now",
+  "checkinSuccess": "Checked in! +${points} Points",
+  "alreadyChecked": "Already checked in today",
+  "checkInFailed": "Check-in failed, please try again",
+  "dailyTasks": "Daily Tasks",
+  "noTasks": "No tasks available",
+  "taskShare": "Share with Friends",
+  "taskVideo": "Watch Short Video",
+  "taskProfile": "Complete Profile",
+  "points": "Points",
+  "goFinish": "Go",
+  "completed": "Done",
+  "weekdays": {
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri",
+    "sat": "Sat",
+    "sun": "Sun"
+  },
+  "today": "Today"
+}

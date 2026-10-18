@@ -1,0 +1,23 @@
+flutter_native_splash:
+  # Launch background.
+  color: "#4CAF50"
+  # color_dark: "#1B1B1B"
+
+  # Main splash asset.
+  image: assets/icons/icon.png
+
+  # Platform placement.
+  android_gravity: center
+  ios_content_mode: center
+  web_image_mode: center
+
+  # Hide the system status bar while the native splash is visible.
+  fullscreen: true
+
+  # Android 12+ uses a separate icon treatment.
+  android_12:
+    color: "#4CAF50"
+    # color_dark: "#1B1B1B"
+    image: assets/images/logo/logo.png
+    icon_background_color: "#4CAF50"
+    icon_background_color_dark: "#1B1B1B"

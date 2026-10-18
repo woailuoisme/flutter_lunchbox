@@ -1,0 +1,31 @@
+{
+  "locatingDevice": "正在定位最近的设备...",
+  "nearestDevice": "${name} ${distance}",
+  "noAvailableDevice": "暂无可用设备",
+  "selectCity": "选择城市",
+  "nearbyDevices": "附近设备",
+  "moreDevices": "更多设备",
+  "deviceDistance": "${name} 距你${distance}",
+  "noDevices": "附近暂无设备",
+  "welcome": "您好，好小乖用户",
+  "selfPickup": "自取点餐",
+  "selfPickupHint": "扫码取餐/打包带走",
+  "teamOrder": "团队点餐",
+  "teamOrderHint": "多人订购/团队点餐",
+  "invite": "邀请有礼",
+  "inviteHint": "邀请好友得现金",
+  "recommendTitle": "为我推荐",
+  "grid": {
+    "welfare": "社群福利",
+    "service": "客服中心",
+    "coupon": "领优惠券",
+    "lottery": "幸运抽奖",
+    "invite": "邀请好友",
+    "inviteHint": "邀请好友得现金"
+  },
+  "status": {
+    "open": "营业中",
+    "closed": "休息中",
+    "mobilePayment": "支持移动支付"
+  }
+}

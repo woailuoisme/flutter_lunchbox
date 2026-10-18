@@ -1,0 +1,28 @@
+{
+  "title": "每日簽到",
+  "streakDays": "連續簽到日",
+  "mysteryReward": "迷秘獎勵",
+  "mysteryRewardHint": "連續簽到解鎖神秘獎勵",
+  "pendingCheckin": "待簽到",
+  "checkinNow": "立即簽到",
+  "checkinSuccess": "簽到成功！獲得 ${points} 積分",
+  "alreadyCheckedIn": "今日已簽到",
+  "checkInFailed": "簽到失敗，請稍後再試",
+  "dailyTasks": "每日任務",
+  "taskShare": "分享好友",
+  "taskVideo": "觀看短視頻",
+  "taskProfile": "完善資料",
+  "taskPoints": "+${points} 積分",
+  "goComplete": "去完成",
+  "completed": "已完成",
+  "weekdays": {
+    "mon": "一",
+    "tue": "二",
+    "wed": "三",
+    "thu": "四",
+    "fri": "五",
+    "sat": "六",
+    "sun": "日"
+  },
+  "today": "Today"
+}
