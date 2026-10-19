@@ -116,6 +116,17 @@ jobs:
           key: gradle-${{ runner.os }}-${{ hashFiles('android/**/*.gradle*', 'android/gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: gradle-${{ runner.os }}-
 
+      - name: Cache SwiftPM
+        if: matrix.task == 'ios'
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/Library/Caches/org.swift.swiftpm
+            ~/Library/org.swift.swiftpm
+            ~/Library/Developer/Xcode/DerivedData
+          key: spm-${{ runner.os }}-${{ hashFiles('ios/Runner.xcodeproj/project.pbxproj', 'pubspec.lock') }}
+          restore-keys: spm-${{ runner.os }}-
+
       - name: Setup Java
         if: matrix.task != 'ios'
         uses: actions/setup-java@v6
@@ -178,7 +189,7 @@ jobs:
           OUT=build/app/outputs/flutter-apk
           if [ "${{ matrix.task }}" == "apk" ]; then
             if [ "$BUILD_MODE" == "release" ]; then
-              # 分 ABI 构建（arm64-v8a / armeabi-v7a），符号单独存放避免被 universal 构建覆盖
+              # 分 ABI 构建（arm64-v8a / armeabi-v7a）
               flutter build apk --release \
                 --obfuscate \
                 --split-debug-info=build/app/outputs/symbols \
@@ -191,12 +202,6 @@ jobs:
                 abi=$(basename "$file" | sed 's/app-\(.*\)-release.apk/\1/')
                 mv "$file" "$OUT/lunchbox_${VERSION}_${abi}.apk"
               done
-              # 通用包
-              flutter build apk --release \
-                --obfuscate \
-                --split-debug-info=build/app/outputs/symbols-universal \
-                --tree-shake-icons
-              mv $OUT/app-release.apk "$OUT/lunchbox_${VERSION}_universal.apk"
             else
               flutter build apk --$BUILD_MODE
               mv $OUT/app-$BUILD_MODE.apk "$OUT/lunchbox_${VERSION}_debug.apk"
@@ -250,7 +255,6 @@ jobs:
           name: symbols-${{ matrix.task }}
           path: |
             build/app/outputs/symbols/**
-            build/app/outputs/symbols-universal/**
             build/ios/symbols/**
           compression-level: 9
           if-no-files-found: ignore
