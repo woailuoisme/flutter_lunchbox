@@ -17,6 +17,10 @@ Lunchbox 项目大模型协作简版规范。
 - 代码生成：`build_runner`、`riverpod_generator`、`retrofit_generator`、`freezed`、`json_serializable`、`drift_dev`、`go_router_builder`
 - 结构：Feature-First（`lib/features`）
 - 关键目录：`lib/`、`test/`、`docs/`、`scripts/`
+- 工具链：Flutter 3.47.7、JDK 21（`.mise.toml` 固定）
+- Android：AGP 9.0.1 + Gradle 9.1.0 + built-in Kotlin，**不要**再给 app 应用 `kotlin-android`
+- iOS：Swift Package Manager，不使用 CocoaPods
+- 本地数据库：`lib/core/services/app_database.dart`（drift），由 `main()` 打开并注入 `appDatabaseProvider`
 
 ## 推荐 Skills
 
@@ -40,6 +44,9 @@ Lunchbox 项目大模型协作简版规范。
 - `Patch`（补丁版本）：可直接升级，但必须通过 `just analyze` + `just test`。
 - `Minor`（小版本）：允许升级，需补充受影响模块的功能回归说明。
 - `Major`（大版本）：默认不在业务需求中顺带升级，需单独任务和回滚预案。
+- `just upgrade --major-versions` 会把 `build_runner` 改回 `^2.17.1`（要求 build 5.x，
+  与 `retrofit_generator` / `json_serializable` 冲突），跑完需手动改回
+  `">=2.16.2 <2.17.0"` 并执行 `just deps`。
 
 高风险依赖（升级需重点回归）：
 
@@ -68,12 +75,25 @@ Lunchbox 项目大模型协作简版规范。
 ## 常用命令
 
 ```bash
-just deps
-just build
+just deps          # flutter pub get
+just upgrade       # 升级依赖（可加 --tighten / 包名）
+just outdated      # 查看可升级依赖
+just build         # build_runner 全量生成
 just analyze
 just test
 just ready
+just apk [mode]    # 构建 Android 包
+just signing-key   # 首次生成 release keystore
+just signing-verify # 校验 APK 签名者
 ```
+
+## 发布与签名
+
+- 推 `v*` tag 触发 GitHub Actions 发版，版本号来自 `pubspec.yaml` 的 `version`。
+- Release 产物：分 ABI APK（arm64-v8a / armeabi-v7a）+ AAB + 符号 zip，**不产 universal 包**。
+- release 构建必须有 `android/key.properties`（缺失直接失败，禁止回落 debug 签名）；
+  CI 从 `KEYSTORE_BASE64` / `KEYSTORE_PASSWORD` / `KEY_ALIAS` / `KEY_PASSWORD` 还原。
+- `ENV_PROD` / `ENV_DEV` secrets 由 envied 在 build_runner 阶段读取，缺字段会导致生成失败。
 
 或：
 

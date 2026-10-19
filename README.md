@@ -2,181 +2,107 @@
 
 ## 项目概述
 
-Lunchbox 是一个高可靠、产品级的自动饭盒售货机移动端应用程序。该应用为用户提供了便捷的午餐购买体验，支持
-Stripe 全球支付，并集成了设备管理、地理位置服务及现代化的状态管理架构。
+Lunchbox 是自动饭盒售货机的移动端应用，提供午餐购买、Stripe 支付、设备管理与地理位置服务。
 
 ## 项目特点
 
-- **高性能架构**：基于 Riverpod 的响应式状态管理，确保应用运行流畅且易于维护。
-- **现代化技术栈**：采用 Feature-First 目录结构，代码解耦，便于团队协作开发。
-- **Stripe 支付集成**：支持全球化的 Stripe 支付流程，提供安全可靠的交易体验。
-- **多平台支持**：完美适配 Android 和 iOS 平台。
-- **地理位置服务**：实时获取设备位置，支持基于 Google Maps 的设备搜索。
-- **国际化支持**：使用 slang 实现多语言切换（支持中简、中繁、英文）。
+- **状态管理**：Riverpod 3 + `riverpod_generator`，编译期生成类型安全的 Provider。
+- **目录结构**：Feature-First，按业务模块拆分，模块间通过 repository 解耦。
+- **支付**：Flutter Stripe，支持 PaymentSheet 与 Payment Intent。
+- **多平台**：Android（minSdk 26）与 iOS（无签名构建）。
+- **国际化**：slang，支持中简 / 中繁 / 英文。
 
 ## 技术栈
 
-### 核心框架
+| 领域 | 依赖 |
+|:--|:--|
+| 框架 | Flutter 3.47.7，Dart SDK `^3.10.8` |
+| 状态管理 | `flutter_riverpod`、`riverpod_annotation` |
+| 路由 | `go_router`、`go_router_builder` |
+| 网络 | `dio`、`dio_http2_adapter`、`retrofit`、`connectivity_plus` |
+| 本地存储 | `drift` + `drift_flutter`（SQLite）、`shared_preferences`、`flutter_secure_storage` |
+| UI | `material_ui`、`flex_color_scheme`、`flutter_screenutil`、`material_symbols_icons`、`flutter_svg`、`flutter_animate`、`cached_network_image`、`skeletonizer` |
+| 地图与定位 | `flutter_map`、`geolocator`、`latlong2` |
+| 业务 | `flutter_stripe`、`google_sign_in`、`flutter_form_builder`、`slang_flutter` |
+| 监控 | `sentry_flutter`、`sentry_dio`、`talker_flutter`、`talker_dio_logger` |
+| 代码生成 | `build_runner`、`riverpod_generator`、`retrofit_generator`、`freezed`、`json_serializable`、`drift_dev`、`envied_generator`、`go_router_builder` |
 
-- **前端框架**：Flutter ^3.10.8
-- **状态管理**：[Riverpod](https://riverpod.dev/) (使用 riverpod_generator 生成代码)
-- **路由管理**：[GoRouter](https://pub.dev/packages/go_router)
+## 环境要求
 
-### 数据与网络
-
-- **网络请求**：[Dio](https://pub.dev/packages/dio) + [Retrofit](https://pub.dev/packages/retrofit)
-- **本地数据库**：[Drift](https://drift.simonbinder.eu/) (高效的 SQLite 封装)
-- **键值存储**：SharedPreferences
-- **函数式编程**：[fpdart](https://pub.dev/packages/fpdart) (提供丰富的函数式操作符)
-
-### UI 与 动画
-
-- **主题管理**：FlexColorScheme
-- **图标库**：Lucide Icons, Font Awesome
-- **动画效果**：Lottie, Flutter Animate
-- **响应式布局**：Flutter ScreenUtil
-- **图片加载**：CachedNetworkImage
-- **骨架屏**：Skeletonizer
-
-### 业务功能
-
-- **支付系统**：Flutter Stripe (独占支持)
-- **地图服务**：Google Maps Flutter
-- **国际化**：Slang
-- **表单验证**：Formz
+- Flutter 3.47.7、JDK 21（版本由 `.mise.toml` 固定，`mise install` 即可）
+- Android：AGP 9.0.1 + Gradle 9.1.0 + built-in Kotlin（未应用 `kotlin-android` 插件），compileSdk 37
+- iOS：Xcode + Swift Package Manager（项目不使用 CocoaPods，`sentry_flutter` 仅提供 SPM 包）
 
 ## 架构设计
 
-### 目录结构 (Feature-First)
-
-项目采用按功能模块划分的目录结构，提高代码的可维护性和可扩展性：
-
-```
+```text
 lib/
-├── core/                # 核心基础设施 (网络、错误处理、服务、工具类)
-├── features/            # 业务功能模块 (按功能划分)
-│   ├── auth/            # 认证模块 (登录、注册、状态)
-│   ├── product/         # 产品模块 (列表、详情)
-│   ├── order/           # 订单模块 (创建、查询)
-│   ├── payment/         # 支付模块 (Stripe 集成)
-│   └── ...              # 其他功能 (设备、购物车、个人中心等)
-├── i18n/                # 国际化资源文件
-├── routes/              # 基于 GoRouter 的路由配置
-├── shared/              # 跨模块共享的组件和模型
-└── main.dart            # 应用入口
+├── core/                # 网络、错误、服务、主题、环境变量等基础设施
+│   ├── env/             # envied 编译期环境变量
+│   └── services/        # database / storage / api 等全局服务
+├── features/            # 业务模块（auth、product、cart、order、payment…）
+├── i18n/                # slang 生成的翻译
+├── routes/              # go_router 路由与守卫
+└── main.dart            # 入口
 ```
-
-### 核心设计模式
 
 - **Repository Pattern**：隔离数据源与业务逻辑。
-- **Notifier/State Pattern**：通过 Riverpod Notifier 统一管理 UI 状态。
-- **Simplified Error Handling**：仓库层直接返回数据或 null/默认值，UI 层根据返回值进行展示，简化异常处理流程。
+- **Riverpod Provider**：服务与仓库通过 Provider 注入，UI 只读状态。
+- **本地数据库**：`AppDatabase`（drift）由 `main()` 打开后通过 `appDatabaseProvider` 注入。
 
-## 核心功能
+## 开发命令
 
-### 1. 智能设备管理
+统一入口是 `justfile`（底层复用 `scripts/manage.sh`）。
 
-- 实时监控售货机状态。
-- 基于地理位置的设备搜索与地图展示。
+| 命令 | 说明 |
+|:--|:--|
+| `just prepare` | 拉依赖 + 生成代码 |
+| `just deps` | `flutter pub get` |
+| `just upgrade [--tighten] [包名]` | 升级依赖，`--tighten` 同步 pubspec 下界 |
+| `just outdated` | 查看可升级依赖 |
+| `just build` | build_runner 全量生成 |
+| `just watch` | build_runner 监听 |
+| `just analyze` / `just lint` | 静态分析 |
+| `just format` / `just fix` | 格式化 / 自动修复 |
+| `just test` | 运行测试 |
+| `just ready` / `just check` | 提交前检查（format + fix + analyze） |
+| `just clean` | 清理构建产物 |
+| `just run` / `just apk [mode]` / `just ios` / `just install` | 运行与构建 |
 
-### 2. 购物流程
+`just upgrade --major-versions` 会把 `build_runner` 顶到 2.17+，
+而 `retrofit_generator` / `json_serializable` 仍依赖 `build 4.x`，
+跑完必须把约束改回 `">=2.16.2 <2.17.0"`。
 
-- 响应式购物车管理。
-- 动态产品分类与搜索。
-- 丝滑的下单体验，支持订单详情追踪。
+## 发布与签名
 
-### 3. Stripe 支付系统
-
-- 深度集成 Stripe 支付网关。
-- 支持支付意图 (Payment Intent) 与支付表单 (Payment Sheet)。
-
-### 4. 国际化 (i18n)
-
-- 完整支持多语言环境，实时切换不闪退。
-
-## 开发与构建
-
-项目使用 `justfile` 和 `scripts/manage.sh` 统一管理开发任务。
-
-### 方式一：just（推荐）
-
-#### 环境准备
-
-1. 初始化项目（安装依赖并生成代码）：
-
-   ```bash
-   just prepare
-   ```
-
-#### 常用命令
-
-| 命令                 | 描述                                   |
-|:-------------------|:-------------------------------------|
-| `just deps`        | 获取项目依赖                             |
-| `just build`       | 运行 build_runner 生成代码 (一次性)       |
-| `just watch`       | 运行 build_runner 监听模式               |
-| `just gen-i18n`    | 生成国际化代码                            |
-| `just analyze`     | 运行静态代码分析                           |
-| `just format`      | 格式化代码                               |
-| `just fix`         | 自动修复代码问题                           |
-| `just test`        | 运行所有测试                              |
-| `just ready`       | 执行代码准备 (修复 + 格式化 + 分析)          |
-| `just full-build`  | 完整重建 (清理 + 获取依赖 + 生成代码)       |
-| `just build-apk`   | 构建 Android 包                          |
-| `just build-all`   | 构建所有 Android 包 (AAB + APK)           |
-
-### 方式二：统一脚本
-
-`justfile` 底层复用 `scripts/manage.sh`，也可以直接调用脚本。
-
-#### 环境准备
+版本号取自 `pubspec.yaml` 的 `version`，推送 `v*` tag 触发 GitHub Actions 发版：
 
 ```bash
-./scripts/manage.sh prepare
+git tag v1.0.0 && git push origin v1.0.0
 ```
 
-#### 开发命令
+流水线产物（Release 附件）：
 
-| 命令                   | 描述                                   |
-|:---------------------|:-------------------------------------|
-| `./scripts/manage.sh analyze` | 运行静态代码分析 |
-| `./scripts/manage.sh analyze-strict` | 严格模式代码分析 |
-| `./scripts/manage.sh format` | 格式化代码 |
-| `./scripts/manage.sh fix` | 自动修复代码问题 |
-| `./scripts/manage.sh ready` | 执行代码准备 (format + fix + analyze) |
-| `./scripts/manage.sh test` | 运行测试 |
-| `./scripts/manage.sh build` | 生成代码 |
-| `./scripts/manage.sh watch` | 监听模式生成代码 |
-| `./scripts/manage.sh gen:i18n` | 生成国际化代码 |
-| `./scripts/manage.sh gen:icons` | 生成应用图标 |
-| `./scripts/manage.sh clean` | 清理构建文件 |
-| `./scripts/manage.sh prepare` | 准备开发环境 |
+```text
+lunchbox_<version>_arm64-v8a.apk
+lunchbox_<version>_armeabi-v7a.apk
+lunchbox_<version>.aab
+lunchbox_<version>_symbols-apk.zip
+```
 
-#### 构建命令
-
-| 命令                     | 描述                                   |
-|:-----------------------|:-------------------------------------|
-| `./scripts/manage.sh build:apk [google/fat/split/all]` | 构建 Android 包 |
-| `./scripts/manage.sh build:ios` | 构建 iOS IPA |
-| `./scripts/manage.sh build:all` | 构建所有 Android 包 (AAB + APK) |
-
-#### 查看帮助
+**签名**：release 构建强制要求 `android/key.properties`，缺失时直接失败（不再回落到 debug 签名）。本地首次准备：
 
 ```bash
-./scripts/manage.sh help
+just signing-key        # 生成 android/app/upload-keystore.jks
+just signing-base64     # 输出 base64，填入 GitHub Secret KEYSTORE_BASE64
+just signing-verify     # 校验已构建 APK 的签名者
 ```
 
-### 运行应用
+CI 需要的 secrets：`KEYSTORE_BASE64`、`KEYSTORE_PASSWORD`、`KEY_ALIAS`、`KEY_PASSWORD`，
+以及 `ENV_PROD` / `ENV_DEV`（envied 编译期读取，缺 key 会让 build_runner 失败）。
 
-```bash
-# 运行到 Android
-flutter run --target-platform android-arm64
-
-# 运行到 iOS (无签名)
-flutter run --no-codesign
-```
+keystore 与密码必须离线备份：丢失后已安装用户无法升级。
 
 ## 许可证
 
-本项目采用 MIT 许可证。详情请查看 [LICENSE](file:///Users/seaside/Projects/flutter/lunchbox/LICENSE)
-文件。
+本项目采用 MIT 许可证（仓库内暂无 LICENSE 文件，需补充）。
