@@ -11,9 +11,9 @@ Lunchbox 项目大模型协作简版规范。
 - 本地存储：`shared_preferences`、`flutter_secure_storage`、`drift`、`drift_flutter`
 - UI 与动效：`flutter_screenutil`、`flex_color_scheme`、`flutter_svg`、`flutter_animate`、`animations`、`cached_network_image`、`skeletonizer`
 - 地图与定位：`flutter_map`、`geolocator`、`latlong2`
-- 业务能力：`flutter_stripe`、`google_sign_in`、`firebase_core`、`firebase_analytics`、`slang_flutter`、`flutter_form_builder`
+- 业务能力：`flutter_stripe`、`google_sign_in`、`slang_flutter`、`flutter_form_builder`
 - 监控与日志：`sentry_flutter`、`sentry_dio`、`talker_flutter`、`talker_dio_logger`
-- 模型与序列化：`freezed_annotation`、`json_annotation`、`fpdart`
+- 模型与序列化：`freezed_annotation`
 - 代码生成：`build_runner`、`riverpod_generator`、`retrofit_generator`、`freezed`、`json_serializable`、`drift_dev`、`go_router_builder`
 - 结构：Feature-First（`lib/features`）
 - 关键目录：`lib/`、`test/`、`docs/`、`scripts/`

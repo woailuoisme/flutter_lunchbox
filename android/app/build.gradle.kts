@@ -6,7 +6,6 @@ plugins {
     // Kotlin 由 AGP 9 的 built-in Kotlin 提供，不再应用 kotlin-android
     // The Flutter Gradle Plugin must be applied after the Android Gradle plugin.
     id("dev.flutter.flutter-gradle-plugin")
-    id("com.google.gms.google-services")
 }
 
 android {
@@ -82,7 +81,5 @@ flutter {
 
 dependencies {
   coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
-  implementation(platform("com.google.firebase:firebase-bom:35.0.0"))
-  implementation("com.google.firebase:firebase-analytics")
   implementation("androidx.appcompat:appcompat:1.7.1")
 }

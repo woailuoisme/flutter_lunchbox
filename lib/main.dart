@@ -3,7 +3,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:lunchbox/core/env/app_env.dart';
 import 'package:lunchbox/core/services/database_service.dart';
@@ -18,8 +17,6 @@ import 'package:toastification/toastification.dart';
 void main() async {
   final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-
-  await Firebase.initializeApp();
 
   await cleanupLegacySqliteDatabase();
   final database = openAppDatabase();
