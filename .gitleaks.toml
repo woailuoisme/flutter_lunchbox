@@ -1,0 +1,38 @@
+# gitleaks 配置：默认规则全开，只对 Flutter 项目的高噪声文件做白名单
+# 使用：gitleaks detect --config .gitleaks.toml（扫描提交历史）
+#       gitleaks protect --staged --config .gitleaks.toml（提交前）
+
+title = "lunchbox"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "构建产物与代码生成文件：内容是哈希/序列化数据，非密钥"
+paths = [
+  '''pubspec\.lock''',
+  '''.*\.g\.dart''',
+  '''.*\.freezed\.dart''',
+  '''.*\.gr\.dart''',
+  '''.*\.mocks\.dart''',
+  '''(^|/)\.dart_tool/''',
+  '''(^|/)build/''',
+  '''(^|/)ios/Pods/''',
+  '''(^|/)ios/Flutter/ephemeral/''',
+  '''(^|/)\.agents/''',
+]
+
+[[allowlists]]
+description = "示例与模板文件：只含占位值或客户端公开标识"
+paths = [
+  '''\.env\.example''',
+  '''key\.properties\.example''',
+  '''google-services\.json''',
+  '''GoogleService-Info\.plist''',
+]
+
+[[allowlists]]
+description = "二进制与资源文件"
+paths = [
+  '''.*\.(jks|keystore|p12|apk|aab|zip|png|jpg|jpeg|webp|gif|ttf|otf|svg)''',
+]
