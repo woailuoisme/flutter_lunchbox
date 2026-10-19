@@ -99,3 +99,26 @@ ios:
 # 安装应用到设备（默认 debug，可选: just install release）
 install mode="debug":
     ./scripts/manage.sh install {{ mode }}
+
+# ------------------------------------------------------------------------------
+# 6. 发布签名 (Release Signing)
+# ------------------------------------------------------------------------------
+
+# 生成 release keystore（仅首次执行；生成后离线备份，并填好 android/key.properties）
+signing-key alias="upload":
+    keytool -genkeypair -v -keystore android/app/upload-keystore.jks \
+        -alias {{ alias }} -keyalg RSA -keysize 2048 -validity 10000
+
+# 输出 keystore 的 base64，粘贴到 GitHub Secret KEYSTORE_BASE64
+signing-base64:
+    base64 -i android/app/upload-keystore.jks
+
+# 校验已构建 APK 的签名者
+signing-verify:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    signer=$(find "${ANDROID_HOME:-$HOME/Library/Android/sdk}/build-tools" -maxdepth 2 -name apksigner -type f | sort -V | tail -1)
+    for apk in build/app/outputs/flutter-apk/lunchbox_*.apk; do
+      echo "== $apk"
+      "$signer" verify --print-certs "$apk" | head -2
+    done

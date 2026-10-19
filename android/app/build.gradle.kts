@@ -41,6 +41,13 @@ android {
     if (keystorePropertiesFile.exists()) {
         keystoreProperties.load(FileInputStream(keystorePropertiesFile))
     }
+    // 缺 keystore 时禁止打 release 包，避免静默用 debug key 签名
+    val buildingRelease = gradle.startParameter.taskNames.any {
+        it.contains("Release", ignoreCase = true)
+    }
+    if (buildingRelease && !keystorePropertiesFile.exists()) {
+        error("Release build requires android/key.properties, run: just signing-key")
+    }
 
     signingConfigs {
         create("release") {
@@ -53,11 +60,7 @@ android {
 
     buildTypes {
         release {
-            signingConfig = if (keystorePropertiesFile.exists()) {
-                signingConfigs.getByName("release")
-            } else {
-                signingConfigs.getByName("debug")
-            }
+            signingConfig = signingConfigs.getByName("release")
             
             isMinifyEnabled = true
             isShrinkResources = true
