@@ -57,7 +57,4 @@ android/key.properties
 
 # Envied
 .env*
-.env.prod
-.env.dev
-.env.test
 !.env.example

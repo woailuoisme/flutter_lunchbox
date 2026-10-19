@@ -156,8 +156,8 @@ jobs:
 
       - name: Restore Environment Files
         run: |
-          echo "${{ secrets.ENV_PROD }}" > .env.prod
-          echo "${{ secrets.ENV_DEV }}" > .env.dev
+          echo "${{ secrets.ENV_PROD }}" > .env.production
+          echo "${{ secrets.ENV_DEV }}" > .env.development
 
       - name: Restore Keystore
         if: matrix.task != 'ios' && needs.prepare.outputs.build_mode == 'release'
