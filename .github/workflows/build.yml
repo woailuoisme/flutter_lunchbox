@@ -1,7 +1,11 @@
 name: Flutter Build & Release app
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: false
 
 on:
   push:
@@ -87,12 +91,30 @@ jobs:
     if: needs.prepare.outputs.has_tasks == 'true'
     name: Build ${{ matrix.task }}
     runs-on: ${{ matrix.task == 'ios' && 'macos-latest' || 'ubuntu-24.04' }}
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.prepare.outputs.matrix) }}
 
     steps:
       - uses: actions/checkout@v7
+
+      - name: Cache pub
+        uses: actions/cache@v6
+        with:
+          path: ~/.pub-cache
+          key: pub-${{ runner.os }}-${{ hashFiles('pubspec.lock') }}
+          restore-keys: pub-${{ runner.os }}-
+
+      - name: Cache Gradle
+        if: matrix.task != 'ios'
+        uses: actions/cache@v6
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('android/**/*.gradle*', 'android/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
 
       - name: Setup Java
         if: matrix.task != 'ios'
@@ -126,14 +148,28 @@ jobs:
           echo "${{ secrets.ENV_PROD }}" > .env.prod
           echo "${{ secrets.ENV_DEV }}" > .env.dev
 
-      - name: Build Runner
-        run: flutter pub run build_runner build --delete-conflicting-outputs
-
-      - name: Analyze Build Size (Release only)
-        if: needs.prepare.outputs.build_mode == 'release' && matrix.task == 'apk'
+      - name: Restore Keystore
+        if: matrix.task != 'ios' && needs.prepare.outputs.build_mode == 'release'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          flutter build apk --release --analyze-size --target-platform android-arm64
-          echo "📊 Build size analysis completed. Check logs above for details."
+          if [ -z "$KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_PASSWORD" ] || [ -z "$KEY_ALIAS" ] || [ -z "$KEY_PASSWORD" ]; then
+            echo "::error::release 构建需要 KEYSTORE_BASE64 / KEYSTORE_PASSWORD / KEY_ALIAS / KEY_PASSWORD 四个 secrets"
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > android/app/upload-keystore.jks
+          {
+            echo "storeFile=upload-keystore.jks"
+            echo "storePassword=$KEYSTORE_PASSWORD"
+            echo "keyAlias=$KEY_ALIAS"
+            echo "keyPassword=$KEY_PASSWORD"
+          } > android/key.properties
+
+      - name: Build Runner
+        run: dart run build_runner build
 
       - name: Build Task
         run: |
@@ -187,6 +223,15 @@ jobs:
             (cd build/ios/iphoneos && zip -qry "$ROOT/build/lunchbox_${VERSION}_ios-unsigned.zip" ./*.app)
           fi
 
+      - name: Verify APK Signature
+        if: matrix.task == 'apk' && needs.prepare.outputs.build_mode == 'release'
+        run: |
+          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -maxdepth 2 -name apksigner -type f | sort -V | tail -1)
+          for apk in build/app/outputs/flutter-apk/lunchbox_*.apk; do
+            echo "== $apk"
+            "$APKSIGNER" verify --print-certs "$apk" | head -2
+          done
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v7
         with:
@@ -215,6 +260,9 @@ jobs:
     if: needs.prepare.outputs.build_mode == 'release'
     name: Create Unified Release
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
     steps:
       - name: Download Artifacts
         uses: actions/download-artifact@v8
