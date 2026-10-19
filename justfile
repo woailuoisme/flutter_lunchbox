@@ -20,6 +20,14 @@ deps:
 upgrade *args:
     flutter pub upgrade {{ args }}
 
+# 升级到约束允许的最新版，并把 pubspec 下界提到实际解析版本
+upgrade-tighten:
+    flutter pub upgrade --tighten
+
+# 跨大版本升级并改写 pubspec；跑完须把 build_runner 改回 ">=2.16.2 <2.17.0"
+upgrade-major:
+    flutter pub upgrade --major-versions
+
 # 检查可升级的过期依赖
 outdated:
     flutter pub outdated
