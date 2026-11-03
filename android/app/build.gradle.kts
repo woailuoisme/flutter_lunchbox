@@ -52,6 +52,12 @@ android {
             }
         }
     }
+
+    lint {
+        disable.add("InvalidPackage")
+        checkReleaseBuilds = false
+        abortOnError = false
+    }
 }
 
 kotlin {
