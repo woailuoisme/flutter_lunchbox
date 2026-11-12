@@ -1,0 +1,56 @@
+FROM ubuntu:24.04
+
+ARG FLUTTER_VERSION=3.50.0
+ARG ANDROID_SDK_TOOLS_VERSION=16111833
+ARG ANDROID_PLATFORM_VERSION=37.0
+ARG ANDROID_BUILD_TOOLS_VERSION=37.0.0
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    LANG=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8 \
+    LANGUAGE=en_US:en \
+    ANDROID_HOME=/opt/android-sdk-linux \
+    FLUTTER_HOME=/root/sdks/flutter \
+    FLUTTER_VERSION=${FLUTTER_VERSION}
+
+ENV ANDROID_SDK_ROOT=${ANDROID_HOME} \
+    FLUTTER_ROOT=${FLUTTER_HOME} \
+    PATH="${FLUTTER_HOME}/bin:${FLUTTER_HOME}/bin/cache/dart-sdk/bin:${ANDROID_HOME}/cmdline-tools/latest/bin:${ANDROID_HOME}/platform-tools:${PATH}"
+
+# 1. 基础依赖 + JDK 21 + UTF-8 Locale（含 drift 所需的 libsqlite3-dev）
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    git \
+    libglu1-mesa \
+    libsqlite3-dev \
+    libstdc++6 \
+    locales \
+    openjdk-21-jdk \
+    unzip \
+    xz-utils \
+    zip \
+    && rm -rf /var/lib/apt/lists/* \
+    && echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
+    && locale-gen \
+    && update-locale LANG=en_US.UTF-8
+
+# 2. Android Command Line Tools & SDK（对齐 compileSdk 37）
+RUN mkdir -p "${ANDROID_HOME}/cmdline-tools" /root/.android \
+    && touch /root/.android/repositories.cfg \
+    && curl -fsSL "https://dl.google.com/android/repository/commandlinetools-linux-${ANDROID_SDK_TOOLS_VERSION}_latest.zip" -o /tmp/cmdline-tools.zip \
+    && unzip -q /tmp/cmdline-tools.zip -d "${ANDROID_HOME}/cmdline-tools" \
+    && mv "${ANDROID_HOME}/cmdline-tools/cmdline-tools" "${ANDROID_HOME}/cmdline-tools/latest" \
+    && rm -f /tmp/cmdline-tools.zip \
+    && yes | sdkmanager --licenses >/dev/null \
+    && sdkmanager \
+      "platform-tools" \
+      "platforms;android-${ANDROID_PLATFORM_VERSION}" \
+      "build-tools;${ANDROID_BUILD_TOOLS_VERSION}"
+
+# 3. Flutter SDK 3.50.0 + 预缓存 Android 产物
+RUN git clone --depth 1 --branch "${FLUTTER_VERSION}" https://github.com/flutter/flutter.git "${FLUTTER_HOME}" \
+    && git config --global --add safe.directory "${FLUTTER_HOME}" \
+    && yes | flutter doctor --android-licenses >/dev/null \
+    && flutter precache --android \
+    && flutter --version

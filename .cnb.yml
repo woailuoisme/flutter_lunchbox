@@ -19,19 +19,33 @@ v*:
       stages:
         - name: Restore Keystore & Env
           script: |
-            if [ -z "${KEYSTORE_BASE64:-}" ] || [ -z "${KEYSTORE_PASSWORD:-}" ] || [ -z "${KEY_ALIAS:-}" ] || [ -z "${KEY_PASSWORD:-}" ]; then
-              echo "错误: release 构建需要 KEYSTORE_BASE64 / KEYSTORE_PASSWORD / KEY_ALIAS / KEY_PASSWORD 四个环境变量"
-              exit 1
-            fi
-            echo "$KEYSTORE_BASE64" | base64 -d > android/app/upload-keystore.jks
-            cat <<EOF > android/key.properties
+            if [ -n "${KEYSTORE_BASE64:-}" ] && [ -n "${KEYSTORE_PASSWORD:-}" ] && [ -n "${KEY_ALIAS:-}" ] && [ -n "${KEY_PASSWORD:-}" ]; then
+              base64 -d <<EOF > android/app/upload-keystore.jks
+            $KEYSTORE_BASE64
+            EOF
+              cat <<EOF > android/key.properties
             storeFile=upload-keystore.jks
             storePassword=$KEYSTORE_PASSWORD
             keyAlias=$KEY_ALIAS
             keyPassword=$KEY_PASSWORD
             EOF
-            printf '%s\n' "${ENV_PROD:-}" > .env.production
-            printf '%s\n' "${ENV_DEV:-}" > .env.development
+            fi
+
+            if [ -n "${ENV_PROD:-}" ]; then
+              cat <<EOF > .env.production
+            $ENV_PROD
+            EOF
+            elif [ -f .env.example ]; then
+              cp .env.example .env.production
+            fi
+
+            if [ -n "${ENV_DEV:-}" ]; then
+              cat <<EOF > .env.development
+            $ENV_DEV
+            EOF
+            elif [ -f .env.example ]; then
+              cp .env.example .env.development
+            fi
 
         - name: Prepare & CodeGen
           script: |
@@ -57,7 +71,6 @@ v*:
 
             APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner -type f | sort -V | tail -1)
             for apk in dist/lunchbox_*.apk; do
-              echo "== $apk"
               "$APKSIGNER" verify --print-certs "$apk" | head -2
             done
 
