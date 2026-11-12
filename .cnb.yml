@@ -4,7 +4,7 @@
 
 .android_base: &android_base
   docker:
-    image: ghcr.io/cirruslabs/flutter:3.50.0
+    build: .cnb/Dockerfile
     volumes:
       - /root/.pub-cache:copy-on-write
       - /root/.gradle:copy-on-write
