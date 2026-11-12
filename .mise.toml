@@ -4,3 +4,4 @@ java = "21"
 just = "latest"
 shfmt = "latest"
 shellcheck = "latest"
+# Gradle 版本由 android/gradle/wrapper/gradle-wrapper.properties 锁定（当前 9.5.0），构建走 gradlew，无需在此安装全局 gradle
