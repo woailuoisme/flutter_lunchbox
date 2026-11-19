@@ -34,7 +34,7 @@ dependencies:
   # 基础 UI
   flutter_screenutil: ^5.9.3
   flex_color_scheme: ^9.0.0
-  material_ui: ^1.11.0
+  material_ui: ^1.11.1
   material_symbols_icons: ^4.2960.0
   flutter_animate: ^4.5.2
   flutter_svg: ^2.3.4
