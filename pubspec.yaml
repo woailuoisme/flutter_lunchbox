@@ -60,7 +60,7 @@ dependencies:
   alphabet_list_view: ^1.2.1
   timelines_plus: ^2.0.1
   page_transition: ^2.2.2
-  upgrader: ^13.8.0
+  upgrader: ^14.0.0
   flutter_rating_bar: ^4.0.1
 
   # 地图与定位
