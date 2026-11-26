@@ -84,7 +84,7 @@ dependencies:
   flutter_stripe: ^14.2.0
   slang_flutter: ^4.19.0
   sentry_flutter: ^10.3.0
-  sentry_dio: ^10.3.0
+  sentry_dio: ^10.6.0
 
   # 逻辑工具与日志
   intl: ^0.20.3
