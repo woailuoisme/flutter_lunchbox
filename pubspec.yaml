@@ -43,7 +43,7 @@ dependencies:
   # 扩展 UI 组件
   toastification: ^3.2.2
   cached_network_image: ^4.0.7
-  infinite_scroll_pagination: ^5.1.1
+  infinite_scroll_pagination: ^6.0.0
   custom_refresh_indicator: ^4.0.2
   flutter_spinkit: ^5.2.2
   introduction_screen: ^5.0.1
