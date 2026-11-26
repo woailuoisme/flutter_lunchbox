@@ -37,7 +37,7 @@ dependencies:
   material_ui: ^1.11.0
   material_symbols_icons: ^4.2960.0
   flutter_animate: ^4.5.2
-  flutter_svg: ^2.3.4
+  flutter_svg: ^2.5.1
   animations: ^3.0.0
 
   # 扩展 UI 组件
